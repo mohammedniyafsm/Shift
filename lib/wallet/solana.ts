@@ -1,3 +1,7 @@
+import { HDKey } from "@scure/bip32";
+import nacl from 'tweetnacl'
+
+
 // Solana's registered coin type in BIP-44
 // every coin has a unique number — Solana is 501
 // Bitcoin = 0, Ethereum = 60, Solana = 501

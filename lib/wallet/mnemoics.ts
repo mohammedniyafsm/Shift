@@ -1,6 +1,6 @@
 import * as bip39 from "bip39";
 import { HDKey } from "@scure/bip32";
-import type { MasterKey,SolanaAccount } from './types'
+import type { MasterKey } from './types'
 import nacl from 'tweetnacl'
 
 
@@ -80,6 +80,5 @@ export function deriveMasterKey(seed: Buffer): {
         masterChainCodeHex: Buffer.from(hdkey.chainCode).toString('hex'),
     }
 }
-
 
 

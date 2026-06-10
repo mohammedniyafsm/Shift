@@ -1,271 +1,326 @@
-
-"use client"
-import { useState, useEffect } from "react"
-import { generateMnemonic, mnemonicToSeed, deriveMasterKey, deriveSolanaAccounts } from "@/lib/wallet/createMnemoics"
-import type { SolanaAccount } from "@/lib/wallet/types"
-
-// define what we store in state
-interface WalletState {
-  mnemonic: string
-  words: string[]
-  entropyHex: string
-  seedHex: string
-  masterPrivateKeyHex: string
-  masterChainCodeHex: string
-  accounts: SolanaAccount[]
-}
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Image from "next/image";
 
 export default function Home() {
-  const [wallet, setWallet] = useState<WalletState | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [showPrivateKeys, setShowPrivateKeys] = useState(false)
-
-  // generate wallet on button click — NOT on useEffect
-  // useEffect runs on every refresh which is bad for wallets
-  async function handleGenerate() {
-    setLoading(true)
-
-    // Step 1 — entropy → 12 words
-    const { mnemonic, words, entropyHex } = generateMnemonic()
-
-    // Step 2 — words → seed
-    const { seed, seedHex } = await mnemonicToSeed(mnemonic)
-
-    // Step 3 — seed → master keys
-    const { masterPrivateKeyHex, masterChainCodeHex } = deriveMasterKey(seed)
-
-    // Step 4+5 — derive 5 Solana addresses
-    const accounts = deriveSolanaAccounts(seed, 5)
-
-    setWallet({
-      mnemonic,
-      words,
-      entropyHex,
-      seedHex,
-      masterPrivateKeyHex,
-      masterChainCodeHex,
-      accounts,
-    })
-
-    setLoading(false)
-  }
-
   return (
-    <div className="min-h-screen bg-black text-white font-mono p-8">
-      <div className="max-w-4xl mx-auto flex flex-col gap-8">
+    <div className="">
+      <div className="px-8 py-8">
 
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-purple-400">
-              Solana HD Wallet
-            </h1>
-            <p className="text-zinc-500 text-sm mt-1">
-              BIP-39 → BIP-32 → BIP-44 → Ed25519
-            </p>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Image
+              src="/loas.png"
+              width={40}
+              height={40}
+              alt="Picture of the author"
+            />
+            <Image
+              src="/shiftlog.png"
+              width={80}
+              height={80}
+              alt="Picture of the author"
+            />
           </div>
-          <button
-            onClick={handleGenerate}
-            disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 
-                       text-white px-6 py-3 rounded-lg font-bold transition-colors"
-          >
-            {loading ? "Generating..." : "Generate Wallet"}
-          </button>
+
+          <div className="">
+            <button className="bg-foreground text-background rounded-4xl w-40 h-12 font-medium ">Create Wallet</button>
+          </div>
         </div>
 
-        {/* ── Empty state ── */}
-        {!wallet && (
-          <div className="border border-zinc-800 rounded-xl p-16 text-center text-zinc-600">
-            Click Generate Wallet to derive your HD tree
+
+        <div className="pt-20">
+
+          <div className="text-center pt-28 text-3xl font-medium">
+            <h1>One Wallet</h1>
+            <h1>for all your crypto</h1>
           </div>
-        )}
 
-        {wallet && (
-          <div className="flex flex-col gap-6">
+          <div className="flex justify-center text-6xl font-bold items-center pt-6 gap-2">
+            <h1>Take</h1>
+            <Image
+              src="/loas.png"
+              width={60}
+              height={60}
+              alt="Picture of the author"
+            />
+            <h1>Shift</h1>
+          </div>
 
-            {/* ── STEP 1 — Mnemonic Words ── */}
-            <div className="border border-zinc-800 rounded-xl overflow-hidden">
-              <div className="bg-zinc-900 px-4 py-3 flex items-center gap-3 
-                              border-b border-zinc-800">
-                <span className="bg-purple-600 text-white text-xs font-bold 
-                                 w-6 h-6 rounded-full flex items-center justify-center">
-                  1
-                </span>
-                <span className="font-bold text-sm">Entropy → Mnemonic</span>
-                <span className="ml-auto text-xs bg-purple-900/50 text-purple-400 
-                                 border border-purple-800 px-2 py-0.5 rounded-full">
-                  BIP-39
-                </span>
-              </div>
-              <div className="p-4 flex flex-col gap-3">
+          <div className="flex items-center justify-center py-12">
+            <button className="bg-[#05c92f] text-xl px-16 py-6 font-sans border-2 border-gray-950 rounded-full flex items-center justify-between gap-4">
+              <Image
+                src="/3.png"
+                width={60}
+                height={60}
+                alt="Picture of the author"
+              />
+              Create Wallet
+            </button>
+          </div>
 
-                {/* 12 words grid */}
-                <div className="grid grid-cols-4 gap-2">
-                  {wallet.words.map((word, i) => (
-                    <div key={i}
-                      className="bg-zinc-900 border border-zinc-800 rounded-lg 
-                                 px-3 py-2 flex items-center gap-2">
-                      <span className="text-zinc-600 text-xs w-4">{i + 1}</span>
-                      <span className="text-green-400 text-sm font-medium">{word}</span>
-                    </div>
-                  ))}
-                </div>
+        </div>
 
-                {/* entropy hex */}
-                <div>
-                  <p className="text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                    entropy (hex)
-                  </p>
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-lg 
-                                  p-3 text-xs text-zinc-400 break-all">
-                    {wallet.entropyHex}
-                  </div>
-                </div>
-              </div>
+        <div className="">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-auto border border-gray-900 rounded-4xl"
+          >
+            <source
+              src="https://player.vimeo.com/progressive_redirect/playback/996079329/rendition/720p/file.mp4?loc=external&oauth2_token_id=1772551642&signature=3eb9960e8d447b2dcbb16b894a5280d9e44cb94c4df48b037b386868b86ac91f"
+              type="video/mp4"
+            />
+          </video>
+        </div>
+
+        <div className="text-start pt-20">
+          <h1 className="text-5xl font-medium">Capture every
+            opportunity  on
+            every chain.
+          </h1>
+
+
+        </div>
+
+        <div className="pt-20 flex flex-col gap-8">
+
+          <div className="bg-[rgb(249,250,249)] py-16 rounded-3xl px-8 flex flex-col gap-4 ">
+            <h1 className="font-medium text-4xl">10M+ assets at your fingertips</h1>
+            <p className="text-xl ">Ctrl supports all the newest memecoins and testnets on every EVM chain, Bitcoin, Ethereum, Cardano, Solana, THORChain, Midnight and more.</p>
+            <div className="">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto"
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250592/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772650813&signature=66c020553b0a1c88b41efcd148ed507024491d3245ba4929052f6c2279787311"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+          </div>
+
+          <div className="bg-[rgb(249,250,249)] py-16 rounded-3xl px-8 flex flex-col gap-4 ">
+            <h1 className="font-medium text-4xl">Connect to every application</h1>
+            <p className="text-xl ">Ctrl connects to every dapp on 2,500+ blockchains and testnets.</p>
+            <div className="">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto"
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250613/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772650813&signature=865063dac31e099fd5c5dedd1e7b12036ea598dc93e3b48e2cf9e05905c16db4"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+          </div>
+
+          <div className="bg-[rgb(249,250,249)] py-16 rounded-3xl px-8 flex flex-col gap-4 ">
+            <h1 className="font-medium text-4xl">One home for all your NFTs</h1>
+            <p className="text-xl ">Ctrl’s NFT gallery displays all your NFTs from 30+ chains including Bitcoin, Ethereum, Cardano, Solana, THORChain, Midnight and more.</p>
+            <div className="">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto"
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250622/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772650813&signature=63e97461ac4523748de77dea341f9c39993c6b7bb6010108e3d0a22cd33667fc"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="mt-20 pt-8 ">
+          <h1 className="font-medium text-5xl text-center">Join the 600,000+ people who trust Shift.</h1>
+        </div>
+
+        <div className="">
+
+          <div className="bg-[#9DC4F5] mt-20 px-8 pt-12 rounded-2xl ">
+            <h1 className="font-medium text-3xl">Founded in 2020, Ctrl (formerly XDEFI) was the world's first multichain wallet.</h1>
+            <div className="">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto "
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250452/rendition/1080p/file.mp4?loc=external&oauth2_token_id=1772650813&signature=a363f94503b78cd6e3233b37d42e7464044ae42a0385e2b07889f95215360593"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+          </div>
+
+          <div className="bg-[#ffcadc] mt-20 px-8 pt-12 rounded-2xl ">
+            <h1 className="font-medium text-3xl">4.8 star rating in the Google Chrome Store after 650+ reviews.</h1>
+            <div className="">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto "
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250465/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772650813&signature=9bd58a7ff1e80d843adbad175f728ba48c202d2b399e6c33385e799b0522d53e"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+          </div>
+
+          <div className="bg-[#fbe74e] mt-20 px-8 pt-12 rounded-2xl ">
+            <h1 className="font-medium text-3xl">24/7 live customer support. Our global team is here to help you.</h1>
+            <div className="">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto "
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250482/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772650813&signature=7a3ef62ee1ca90b0296f942e2a2f03513d069b2695e93158c3f8e5be306c454e"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div className="bg-[rgb(249,250,249)] mt-12 py-12">
+
+        <div className="">
+          <h1 className="py-8 flex justify-end px-12">Secure and private</h1>
+          <div className="">
+            <h1 className="font-medium text-5xl pl-12 pr-8">The Secure way to Web3</h1>
+          </div>
+        </div>
+
+        <div className="px-8 mt-20 flex flex-col gap-12">
+
+          <div className="bg-[#ecefec] rounded-2xl px-8 py-10">
+            <h1 className="text-4xl font-medium">Portfolio overview</h1>
+            <p className="text-xl mt-4">Track your entire portfolio in one place.</p>
+
+            <div className="mt-12">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto border border-gray-900 rounded-4xl"
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250644/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772650813&signature=a68d2b79c2f2cce1858d22fb57e0a39c55c03251daab55597054be0345e2a270"
+                  type="video/mp4"
+                />
+              </video>
             </div>
 
-            {/* ── STEP 2 — Seed ── */}
-            <div className="border border-zinc-800 rounded-xl overflow-hidden">
-              <div className="bg-zinc-900 px-4 py-3 flex items-center gap-3 
-                              border-b border-zinc-800">
-                <span className="bg-purple-600 text-white text-xs font-bold 
-                                 w-6 h-6 rounded-full flex items-center justify-center">
-                  2
-                </span>
-                <span className="font-bold text-sm">Mnemonic → 512-bit Seed</span>
-                <span className="ml-auto text-xs bg-green-900/50 text-green-400 
-                                 border border-green-800 px-2 py-0.5 rounded-full">
-                  PBKDF2 · 2048 rounds
-                </span>
-              </div>
-              <div className="p-4">
-                <p className="text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                  seed (hex · 64 bytes)
-                </p>
-                <div className="bg-zinc-900 border border-zinc-800 rounded-lg 
-                                p-3 text-xs break-all">
-                  <span className="text-purple-400">{wallet.seedHex.slice(0, 64)}</span>
-                  <span className="text-blue-400">{wallet.seedHex.slice(64)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* ── STEP 3 — Master Keys ── */}
-            <div className="border border-zinc-800 rounded-xl overflow-hidden">
-              <div className="bg-zinc-900 px-4 py-3 flex items-center gap-3 
-                              border-b border-zinc-800">
-                <span className="bg-purple-600 text-white text-xs font-bold 
-                                 w-6 h-6 rounded-full flex items-center justify-center">
-                  3
-                </span>
-                <span className="font-bold text-sm">Seed → Master Keys</span>
-                <span className="ml-auto text-xs bg-blue-900/50 text-blue-400 
-                                 border border-blue-800 px-2 py-0.5 rounded-full">
-                  HMAC-SHA512
-                </span>
-              </div>
-              <div className="p-4 flex flex-col gap-3">
-                <div>
-                  <p className="text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                    master private key (left 32 bytes)
-                  </p>
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-lg 
-                                  p-3 text-xs text-purple-400 break-all">
-                    {wallet.masterPrivateKeyHex}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-zinc-600 text-xs uppercase tracking-widest mb-1">
-                    master chain code (right 32 bytes)
-                  </p>
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-lg 
-                                  p-3 text-xs text-green-400 break-all">
-                    {wallet.masterChainCodeHex}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ── STEP 4+5 — Derived Addresses ── */}
-            <div className="border border-zinc-800 rounded-xl overflow-hidden">
-              <div className="bg-zinc-900 px-4 py-3 flex items-center gap-3 
-                              border-b border-zinc-800">
-                <span className="bg-purple-600 text-white text-xs font-bold 
-                                 w-6 h-6 rounded-full flex items-center justify-center">
-                  5
-                </span>
-                <span className="font-bold text-sm">Derived Solana Addresses</span>
-                <span className="ml-auto text-xs bg-green-900/50 text-green-400 
-                                 border border-green-800 px-2 py-0.5 rounded-full">
-                  Ed25519 · Base58
-                </span>
-                {/* toggle private keys */}
-                <button
-                  onClick={() => setShowPrivateKeys(!showPrivateKeys)}
-                  className="text-xs border border-zinc-700 hover:border-purple-600 
-                             text-zinc-400 hover:text-purple-400 px-3 py-1 
-                             rounded-full transition-colors"
-                >
-                  {showPrivateKeys ? "Hide" : "Show"} Private Keys
-                </button>
-              </div>
-
-              <div className="divide-y divide-zinc-800">
-                {wallet.accounts.map((acc) => (
-                  <div key={acc.index} className="p-4 flex flex-col gap-2">
-
-                    {/* path + index badge */}
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 bg-zinc-900 border border-zinc-700 
-                                       rounded-full flex items-center justify-center 
-                                       text-xs text-zinc-400 font-bold flex-shrink-0">
-                        {acc.index}
-                      </span>
-                      <span className="text-purple-400 text-xs">{acc.path}</span>
-                    </div>
-
-                    {/* public address */}
-                    <div className="flex items-center gap-2 ml-11">
-                      <span className="text-zinc-600 text-xs uppercase 
-                                       tracking-widest w-14 flex-shrink-0">
-                        address
-                      </span>
-                      <span className="text-green-400 text-xs break-all">
-                        {acc.address}
-                      </span>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(acc.address)}
-                        className="ml-auto text-xs border border-zinc-700 
-                                   hover:border-green-600 text-zinc-500 
-                                   hover:text-green-400 px-2 py-0.5 
-                                   rounded transition-colors flex-shrink-0"
-                      >
-                        copy
-                      </button>
-                    </div>
-
-                    {/* private key — hidden by default */}
-                    {showPrivateKeys && (
-                      <div className="flex items-center gap-2 ml-11">
-                        <span className="text-zinc-600 text-xs uppercase 
-                                         tracking-widest w-14 flex-shrink-0">
-                          privkey
-                        </span>
-                        <span className="text-red-400 text-xs break-all">
-                          {acc.privateKeyHex}
-                        </span>
-                      </div>
-                    )}
-
-                  </div>
-                ))}
-              </div>
-            </div>
 
           </div>
-        )}
+
+          <div className="bg-[#ecefec] rounded-2xl px-8 py-10">
+            <h1 className="text-4xl font-medium">Hardware wallet support</h1>
+            <p className="text-xl mt-4">Keeps funds safe on your Ledger / Trezor.</p>
+
+            <div className="mt-12">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto border border-gray-900 rounded-4xl"
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250529/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772651873&signature=6719d8589d6a58dae4d33b05aec81e970e612af040411d2ceb1cea7947f30135"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+
+
+          </div>
+
+          <div className="bg-[#ecefec] rounded-2xl px-8 py-10">
+            <h1 className="text-4xl font-medium">Malicious address alerts</h1>
+            <p className="text-xl mt-4">We flag malicious and suspicious addresses for you.</p>
+
+            <div className="mt-12">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto border border-gray-900 rounded-4xl"
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250665/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772651873&signature=8a6dee9e10df0b58efdb8bb3445e94bcb658c55d20654ccc3f1e3da65c4385f7"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+
+
+          </div>
+
+          <div className="bg-[#ecefec] rounded-2xl px-8 py-10">
+            <h1 className="text-4xl font-medium">No IP tracking</h1>
+            <p className="text-xl mt-4">We do not record any user IP addresses.</p>
+
+            <div className="mt-12">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto border border-gray-900 rounded-4xl"
+              >
+                <source
+                  src="https://player.vimeo.com/progressive_redirect/playback/995250520/rendition/540p/file.mp4?loc=external&oauth2_token_id=1772651873&signature=4f0c6664f6beb5b1824e9bfc98ef90b847036ce75105e8502bf6c350fd927294"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+        <div className="">
+          
+        </div>
       </div>
     </div>
-  )
+
+  );
 }

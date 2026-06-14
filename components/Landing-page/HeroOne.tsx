@@ -1,4 +1,4 @@
-export function HeroTwo() {
+export function HeroOne() {
     const features = [
         {
             title: "10M+ assets at your fingertips",
@@ -25,6 +25,24 @@ export function HeroTwo() {
 
     return (
         <>
+
+            <div className="">
+                {/* Header Video  */}
+                <div  className="mt-0 lg:mt-16 lg:flex lg:justify-center">
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-auto lg:w-96 lg:w-96 border border-gray-900 rounded-4xl"
+                >
+                    <source
+                        src="https://player.vimeo.com/progressive_redirect/playback/996079329/rendition/720p/file.mp4?loc=external&oauth2_token_id=1772551642&signature=3eb9960e8d447b2dcbb16b894a5280d9e44cb94c4df48b037b386868b86ac91f"
+                        type="video/mp4"
+                    />
+                </video>
+            </div>
+        </div >
             <div className="text-start pt-20 lg:px-32">
                 <h1 className="text-5xl lg:text-9xl font-medium">
                     Capture every opportunity on every chain.

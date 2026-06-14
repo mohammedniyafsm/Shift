@@ -20,7 +20,7 @@ export const Navbar = () => {
             </div>
 
             <div className="">
-                <button className="bg-foreground text-background rounded-4xl w-40 h-12 font-medium ">Create Wallet</button>
+                <button className="bg-foreground text-background rounded-4xl w-40 h-12 font-medium ">Import Wallet</button>
             </div>
         </div>
 

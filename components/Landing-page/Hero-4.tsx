@@ -11,7 +11,7 @@ export function Hero4() {
                 </div>
             </div>
 
-            <div className="px-8 mt-20 flex flex-col gap-12 lg:flex-row lg:gap-4">
+            <div className="px-8 mt-20 flex flex-col gap-12 lg:flex-row lg:gap-4npm">
 
                 <div className="bg-[#ecefec] rounded-2xl px-8 py-10">
                     <h1 className="text-4xl font-medium">Portfolio overview</h1>
